@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-import pprint
 
 # Set up logging configuration to log to a file
 logging.basicConfig(level=logging.DEBUG,
@@ -46,6 +45,34 @@ def read_log_file(file_path):
                 pid_dict[pid][2] = timestamp_str
     return pid_dict
 
+# Function to calculate time difference in HH:MM:SS format
+def calculate_time_diff(start_time_str, end_time_str):
+    if start_time_str and end_time_str:
+        time_format = "%H:%M:%S"
+        start_time = datetime.strptime(start_time_str, time_format)
+        end_time = datetime.strptime(end_time_str, time_format)
+        # Calculate the time difference
+        time_diff = end_time - start_time
+        return time_diff
+    else:
+        return None
+
+# Function 2: Calculate time difference and update the pid_dict
+def calculate_time_difference(pid_dict):
+    for pid, details in pid_dict.items():
+        job_description = details[0]
+        start_time = details[1]
+        end_time = details[2]
+        time_diff = calculate_time_diff(start_time, end_time)
+        if time_diff is not None:
+            time_diff_str = str(time_diff)
+            pid_dict[pid] = [job_description, time_diff_str]
+        else:
+            pid_dict[pid] = [job_description, "N/A"]
+    return pid_dict
+
+
 
 file_path = "/home/robert/Desktop/Scripts/Assesment/logs.log"
+
 
