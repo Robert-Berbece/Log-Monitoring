@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+import pprint
 
 # Set up logging configuration to log to a file
 logging.basicConfig(level=logging.DEBUG,
@@ -72,7 +73,33 @@ def calculate_time_difference(pid_dict):
     return pid_dict
 
 
+# Function 3: Generate report with warnings and errors and save to a file
+def generate_report(pid_dict):
+    for pid, details in pid_dict.items():
+        job_description = details[0]
+        time_diff_str = details[1]
+        # Calculate the duration of the job in minutes
+        try:
+            time_diff = datetime.strptime(time_diff_str, "%H:%M:%S")
+            total_minutes = time_diff.minute + time_diff.second / 60
+
+            # Log warnings and errors based on job duration
+            if total_minutes > 5 and total_minutes <= 10:
+                logger.warning(f"PID {pid} took {total_minutes:.2f} minutes. WARNING: Exceeds 5 minutes.")
+            elif total_minutes > 10:
+                logger.error(f"PID {pid} took {total_minutes:.2f} minutes. ERROR: Exceeds 10 minutes.")
+        except ValueError:
+            continue
+
+    logger.info("Report generation completed.")
+
 
 file_path = "/home/robert/Desktop/Scripts/Assesment/logs.log"
 
+pid_dict = read_log_file(file_path)
 
+pid_dict = calculate_time_difference(pid_dict)
+
+generate_report(pid_dict)
+
+pprint.pprint(pid_dict, indent=4)
